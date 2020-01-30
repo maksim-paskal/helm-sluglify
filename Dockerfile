@@ -13,7 +13,7 @@ RUN cd /usr/src/helm-sluglify \
   && go mod verify \
   && go build -v -o helm-sluglify -ldflags "-X main.buildTime=$(date +"%Y%m%d%H%M%S")"
 
-FROM alpine:3.10
+FROM alpine:latest
 
 RUN apk add --no-cache --virtual .build-deps curl tar \
   && curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.14.9/bin/linux/amd64/kubectl \
