@@ -8,7 +8,7 @@ import (
 	"github.com/gosimple/slug"
 )
 
-func getSlugString(input string, namespaceLength int, namespaceTail string) string {
+func GetSlugString(input string, namespaceLength int, namespaceTail string) string {
 	result := slug.Make(input)
 
 	if len(result) > namespaceLength {
