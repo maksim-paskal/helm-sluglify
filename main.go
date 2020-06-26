@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/gosimple/slug"
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -37,19 +38,11 @@ var appConfig = appConfigType{
 	).Default("zzz").String(),
 }
 
-func main() {
-	kingpin.Version(appConfig.Version)
-	kingpin.HelpFlag.Short('h')
-	kingpin.Parse()
+func getSlug(input string, namespaceLength int, namespaceTail string) string {
+	result := slug.Make(input)
 
-	if len(os.Args) < 2 {
-		panic("no args")
-	}
-
-	result := slug.Make(*appConfig.input)
-
-	if len(result) > *appConfig.namespaceLength {
-		result = result[0:*appConfig.namespaceLength-len(*appConfig.namespaceTail)] + *appConfig.namespaceTail
+	if len(result) > namespaceLength {
+		result = result[0:namespaceLength-len(namespaceTail)] + namespaceTail
 	}
 
 	result = strings.ToLower(result)
@@ -62,5 +55,19 @@ func main() {
 
 	result = reg.ReplaceAllString(result, "")
 
-	fmt.Println(result)
+	return strings.TrimFunc(result, func(r rune) bool {
+		return !unicode.IsLetter(r)
+	})
+}
+
+func main() {
+	kingpin.Version(fmt.Sprintf("%s-%s", appConfig.Version, buildTime))
+	kingpin.HelpFlag.Short('h')
+	kingpin.Parse()
+
+	if len(os.Args) < 2 {
+		panic("no args")
+	}
+
+	fmt.Println(getSlug(*appConfig.input, *appConfig.namespaceLength, *appConfig.namespaceTail))
 }
