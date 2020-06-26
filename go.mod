@@ -1,4 +1,4 @@
-module main
+module github.com/maksim-paskal/helm-sluglify
 
 go 1.12
 
