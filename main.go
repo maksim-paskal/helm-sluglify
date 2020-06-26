@@ -3,11 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
-	"strings"
-	"unicode"
 
-	"github.com/gosimple/slug"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -38,28 +34,6 @@ var appConfig = appConfigType{
 	).Default("zzz").String(),
 }
 
-func getSlug(input string, namespaceLength int, namespaceTail string) string {
-	result := slug.Make(input)
-
-	if len(result) > namespaceLength {
-		result = result[0:namespaceLength-len(namespaceTail)] + namespaceTail
-	}
-
-	result = strings.ToLower(result)
-
-	reg, err := regexp.Compile("[^a-zA-Z0-9-]+")
-
-	if err != nil {
-		panic(err)
-	}
-
-	result = reg.ReplaceAllString(result, "")
-
-	return strings.TrimFunc(result, func(r rune) bool {
-		return !unicode.IsLetter(r)
-	})
-}
-
 func main() {
 	kingpin.Version(fmt.Sprintf("%s-%s", appConfig.Version, buildTime))
 	kingpin.HelpFlag.Short('h')
@@ -69,5 +43,5 @@ func main() {
 		panic("no args")
 	}
 
-	fmt.Println(getSlug(*appConfig.input, *appConfig.namespaceLength, *appConfig.namespaceTail))
+	fmt.Println(getSlugString(*appConfig.input, *appConfig.namespaceLength, *appConfig.namespaceTail))
 }
