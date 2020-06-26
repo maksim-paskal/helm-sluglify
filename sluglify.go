@@ -1,4 +1,4 @@
-package main
+package sluglify
 
 import (
 	"regexp"
