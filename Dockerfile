@@ -1,19 +1,20 @@
-FROM golang:1.12 as build
+FROM golang:1.14 as build
 
-COPY *.go /usr/src/helm-sluglify/
-COPY go.* /usr/src/helm-sluglify/
+COPY *.go /usr/src/sluglify/
+COPY go.* /usr/src/sluglify/
 
 ENV GOOS=linux
 ENV GOARCH=amd64
 ENV CGO_ENABLED=0
+ENV GOFLAGS="-trimpath"
 
-RUN cd /usr/src/helm-sluglify \
+RUN cd /usr/src/sluglify \
   && go mod download \
   && go mod verify \
-  && go build -v -o helm-sluglify -ldflags "-X main.buildTime=$(date +"%Y%m%d%H%M%S")"
+  && go build -v -o sluglify -ldflags "-X main.buildTime=$(date +"%Y%m%d%H%M%S")"
 
 FROM alpine:latest
 
-COPY --from=build /usr/src/helm-sluglify/helm-sluglify /usr/local/bin/helm-sluglify
+COPY --from=build /usr/src/sluglify/sluglify /usr/local/bin/sluglify
 
-CMD helm-sluglify
+CMD /usr/local/bin/sluglify
